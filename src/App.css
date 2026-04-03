@@ -11,7 +11,19 @@ h1 {
 }
 
 .section {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.item-group {
+  margin-bottom: 1.25rem;
+}
+
+.item-group h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+  margin-bottom: 0.5rem;
 }
 
 h2 {
