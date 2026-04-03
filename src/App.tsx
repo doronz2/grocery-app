@@ -1,34 +1,41 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
+const VEGETABLES = [
+  'Tomato',
+  'Eggplant',
+  'Zucchini',
+  'Bell Pepper',
+  'Onion',
+  'Garlic',
+  'Artichoke',
+  'Cucumber',
+  'Spinach',
+  'Olives',
+]
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [amounts, setAmounts] = useState<Record<string, number>>(
+    Object.fromEntries(VEGETABLES.map((v) => [v, 0]))
+  )
+
+  const change = (veg: string, delta: number) =>
+    setAmounts((prev) => ({ ...prev, [veg]: Math.max(0, prev[veg] + delta) }))
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <h1>Grocery App</h1>
+      <h2>Mediterranean Vegetables</h2>
+      <div className="veg-list">
+        {VEGETABLES.map((veg) => (
+          <div key={veg} className="veg-row">
+            <span className="veg-name">{veg}</span>
+            <button onClick={() => change(veg, -1)} disabled={amounts[veg] === 0}>−</button>
+            <span className="veg-amount">{amounts[veg]}</span>
+            <button onClick={() => change(veg, +1)}>+</button>
+          </div>
+        ))}
       </div>
-      <h1>Grocery App v2</h1>
-      <p>Test deploy from clean repo</p>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }
