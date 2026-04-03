@@ -28,13 +28,9 @@ function initAmounts(items: string[]): Amounts {
 }
 
 function ItemRow({
-  name,
-  amount,
-  onChange,
+  name, amount, onChange,
 }: {
-  name: string
-  amount: number
-  onChange: (delta: number) => void
+  name: string; amount: number; onChange: (delta: number) => void
 }) {
   return (
     <div className="veg-row">
@@ -46,21 +42,21 @@ function ItemRow({
   )
 }
 
-function ItemGroup({ title, items }: { title: string; items: string[] }) {
-  const [amounts, setAmounts] = useState<Amounts>(initAmounts(items))
-  const change = (item: string, delta: number) =>
-    setAmounts((prev) => ({ ...prev, [item]: Math.max(0, prev[item] + delta) }))
-
+function ItemGroup({
+  title, items, amounts, onChange,
+}: {
+  title: string; items: string[]; amounts: Amounts; onChange: (item: string, delta: number) => void
+}) {
   return (
     <div className="item-group">
-      <h3>{title}</h3>
+      {title && <h3>{title}</h3>}
       <div className="veg-list">
         {items.map((item) => (
           <ItemRow
             key={item}
             name={item}
             amount={amounts[item]}
-            onChange={(d) => change(item, d)}
+            onChange={(d) => onChange(item, d)}
           />
         ))}
       </div>
@@ -68,22 +64,61 @@ function ItemGroup({ title, items }: { title: string; items: string[] }) {
   )
 }
 
+function formatSection(label: string, items: string[], amounts: Amounts): string | null {
+  const selected = items.filter((i) => amounts[i] > 0).map((i) => `${i} ×${amounts[i]}`)
+  if (selected.length === 0) return null
+  return `${label}: ${selected.join(', ')}`
+}
+
 function App() {
+  const [veggies, setVeggies] = useState<Amounts>(initAmounts(VEGETABLES))
+  const [fruits, setFruits] = useState<Amounts>(initAmounts(FRUITS))
+  const [basics, setBasics] = useState<Amounts>(initAmounts(BASICS))
+  const [uriYonatan, setUriYonatan] = useState<Amounts>(initAmounts(URI_YONATAN_ITEMS))
+  const [approvedList, setApprovedList] = useState<string[] | null>(null)
+
+  const change = (setter: React.Dispatch<React.SetStateAction<Amounts>>) =>
+    (item: string, delta: number) =>
+      setter((prev) => ({ ...prev, [item]: Math.max(0, prev[item] + delta) }))
+
+  const handleApprove = () => {
+    const sections = [
+      formatSection('Basics', BASICS, basics),
+      formatSection('Fruits', FRUITS, fruits),
+      formatSection('Veggies', VEGETABLES, veggies),
+      formatSection('Uri & Yonatan', URI_YONATAN_ITEMS, uriYonatan),
+    ].filter(Boolean) as string[]
+    setApprovedList(sections.length > 0 ? sections : ['(nothing selected)'])
+  }
+
   return (
     <>
       <h1>The Zarchy's Grocery App</h1>
 
       <div className="section">
         <h2>Zarchy</h2>
-        <ItemGroup title="Vegetables" items={VEGETABLES} />
-        <ItemGroup title="Fruits" items={FRUITS} />
-        <ItemGroup title="Basics" items={BASICS} />
+        <ItemGroup title="Vegetables" items={VEGETABLES} amounts={veggies} onChange={change(setVeggies)} />
+        <ItemGroup title="Fruits" items={FRUITS} amounts={fruits} onChange={change(setFruits)} />
+        <ItemGroup title="Basics" items={BASICS} amounts={basics} onChange={change(setBasics)} />
       </div>
 
       <div className="section">
         <h2>Uri & Yonatan</h2>
-        <ItemGroup title="" items={URI_YONATAN_ITEMS} />
+        <ItemGroup title="" items={URI_YONATAN_ITEMS} amounts={uriYonatan} onChange={change(setUriYonatan)} />
       </div>
+
+      <div className="approve-bar">
+        <button className="approve-btn" onClick={handleApprove}>Approve</button>
+      </div>
+
+      {approvedList && (
+        <div className="approved-list">
+          <h2>Shopping List</h2>
+          {approvedList.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
+        </div>
+      )}
     </>
   )
 }

@@ -26,6 +26,44 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
+.approve-bar {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.approve-btn {
+  width: auto;
+  height: auto;
+  font-size: 1rem;
+  padding: 0.6rem 2rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.approve-btn:hover {
+  background: #1d4ed8;
+}
+
+.approved-list {
+  border-top: 1px solid #333;
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+.approved-list h2 {
+  margin-bottom: 1rem;
+}
+
+.approved-list p {
+  font-size: 0.95rem;
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+
 h2 {
   margin-bottom: 0.75rem;
   font-weight: 600;
