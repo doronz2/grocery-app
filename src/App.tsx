@@ -12,8 +12,8 @@ const FRUITS = [
 ]
 
 const BASICS = [
-  'Eggs', 'Milk', 'Rice', 'Pasta', 'Olive Oil', 'Sugar', 'Salt',
-  'Flour', 'Tomato Sauce', 'Hummus', 'Yogurt', 'Tuna',
+  'Eggs', 'Milk', 'Rice', 'Pasta', 'Olive Oil',
+  'Tomato Sauce', 'Hummus', 'Yogurt', 'Tuna',
 ]
 
 const URI_YONATAN_ITEMS = [
