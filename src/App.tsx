@@ -4,18 +4,17 @@ import './App.css'
 const VEGETABLES = [
   'Tomato',
   'Eggplant',
-  'Zucchini',
   'Bell Pepper',
   'Onion',
   'Garlic',
-  'Artichoke',
   'Cucumber',
-  'Spinach',
   'Olives',
 ]
 
-function App() {
-  const [amounts, setAmounts] = useState<Record<string, number>>(
+type Amounts = Record<string, number>
+
+function VegSection({ name }: { name: string }) {
+  const [amounts, setAmounts] = useState<Amounts>(
     Object.fromEntries(VEGETABLES.map((v) => [v, 0]))
   )
 
@@ -23,19 +22,28 @@ function App() {
     setAmounts((prev) => ({ ...prev, [veg]: Math.max(0, prev[veg] + delta) }))
 
   return (
-    <>
-      <h1>Grocery App</h1>
-      <h2>Mediterranean Vegetables</h2>
+    <div className="section">
+      <h2>{name}</h2>
       <div className="veg-list">
         {VEGETABLES.map((veg) => (
           <div key={veg} className="veg-row">
-            <span className="veg-name">{veg}</span>
             <button onClick={() => change(veg, -1)} disabled={amounts[veg] === 0}>−</button>
-            <span className="veg-amount">{amounts[veg]}</span>
             <button onClick={() => change(veg, +1)}>+</button>
+            <span className="veg-amount">{amounts[veg]}</span>
+            <span className="veg-name">{veg}</span>
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <>
+      <h1>The Zarchy's Grocery App</h1>
+      <VegSection name="Yonatan" />
+      <VegSection name="Uri" />
     </>
   )
 }
