@@ -81,6 +81,14 @@ function App() {
     (item: string, delta: number) =>
       setter((prev) => ({ ...prev, [item]: Math.max(0, prev[item] + delta) }))
 
+  const handleReset = () => {
+    setVeggies(initAmounts(VEGETABLES))
+    setFruits(initAmounts(FRUITS))
+    setBasics(initAmounts(BASICS))
+    setUriYonatan(initAmounts(URI_YONATAN_ITEMS))
+    setApprovedList(null)
+  }
+
   const handleApprove = () => {
     const sections = [
       formatSection('Basics', BASICS, basics),
@@ -95,6 +103,11 @@ function App() {
     <>
       <h1>The Zarchy's Grocery App</h1>
 
+      <div className="approve-bar">
+        <button className="approve-btn" onClick={handleApprove}>Approve</button>
+        <button className="reset-btn" onClick={handleReset}>Reset</button>
+      </div>
+
       <div className="section">
         <h2>Zarchy</h2>
         <ItemGroup title="Vegetables" items={VEGETABLES} amounts={veggies} onChange={change(setVeggies)} />
@@ -105,10 +118,6 @@ function App() {
       <div className="section">
         <h2>Uri & Yonatan</h2>
         <ItemGroup title="" items={URI_YONATAN_ITEMS} amounts={uriYonatan} onChange={change(setUriYonatan)} />
-      </div>
-
-      <div className="approve-bar">
-        <button className="approve-btn" onClick={handleApprove}>Approve</button>
       </div>
 
       {approvedList && (
