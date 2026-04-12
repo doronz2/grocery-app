@@ -23,6 +23,8 @@ const URI_YONATAN_ITEMS = [
 
 type Amounts = Record<string, number>
 
+type HistoryEntry = { date: string; items: string[] }
+
 function initAmounts(items: string[]): Amounts {
   return Object.fromEntries(items.map((v) => [v, 0]))
 }
@@ -76,6 +78,7 @@ function App() {
   const [basics, setBasics] = useState<Amounts>(initAmounts(BASICS))
   const [uriYonatan, setUriYonatan] = useState<Amounts>(initAmounts(URI_YONATAN_ITEMS))
   const [approvedList, setApprovedList] = useState<string[] | null>(null)
+  const [history, setHistory] = useState<HistoryEntry[]>([])
 
   const change = (setter: React.Dispatch<React.SetStateAction<Amounts>>) =>
     (item: string, delta: number) =>
@@ -96,7 +99,10 @@ function App() {
       formatSection('Veggies', VEGETABLES, veggies),
       formatSection('Uri & Yonatan', URI_YONATAN_ITEMS, uriYonatan),
     ].filter(Boolean) as string[]
-    setApprovedList(sections.length > 0 ? sections : ['(nothing selected)'])
+    const items = sections.length > 0 ? sections : ['(nothing selected)']
+    setApprovedList(items)
+    const date = new Date().toLocaleString()
+    setHistory((prev) => [{ date, items }, ...prev])
   }
 
   return (
@@ -125,6 +131,20 @@ function App() {
           <h2>Shopping List</h2>
           {approvedList.map((line) => (
             <p key={line}>{line}</p>
+          ))}
+        </div>
+      )}
+
+      {history.length > 1 && (
+        <div className="history">
+          <h2>History</h2>
+          {history.slice(1).map((entry) => (
+            <div key={entry.date} className="history-entry">
+              <p className="history-date">{entry.date}</p>
+              {entry.items.map((line) => (
+                <p key={line} className="history-line">{line}</p>
+              ))}
+            </div>
           ))}
         </div>
       )}

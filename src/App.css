@@ -83,6 +83,36 @@ h1 {
   line-height: 1.5;
 }
 
+.history {
+  border-top: 1px solid #333;
+  padding-top: 1.5rem;
+  margin-top: 1rem;
+}
+
+.history h2 {
+  margin-bottom: 1rem;
+  color: #888;
+}
+
+.history-entry {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #222;
+}
+
+.history-date {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 0.35rem;
+}
+
+.history-line {
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+  color: #aaa;
+  line-height: 1.5;
+}
+
 h2 {
   margin-bottom: 0.75rem;
   font-weight: 600;
