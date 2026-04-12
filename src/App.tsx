@@ -21,6 +21,8 @@ const URI_YONATAN_ITEMS = [
   'Butter', 'Bread', 'Cornflakes',
 ]
 
+const SARA_PHONE = '972506285696' // Sara's WhatsApp number (IL)
+
 type Amounts = Record<string, number>
 
 type HistoryEntry = {
@@ -130,6 +132,12 @@ function App() {
     }
   }
 
+  const handleShare = () => {
+    if (!approvedList) return
+    const text = encodeURIComponent(approvedList.join('\n'))
+    window.open(`https://wa.me/${SARA_PHONE}?text=${text}`, '_blank')
+  }
+
   const handlePreviousOrder = () => {
     if (history.length === 0) return
     const last = history[0]
@@ -170,6 +178,7 @@ function App() {
           {approvedList.map((line) => (
             <p key={line}>{line}</p>
           ))}
+          <button className="share-btn" onClick={handleShare}>Share with Sara</button>
         </div>
       )}
 
