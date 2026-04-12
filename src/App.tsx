@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 const VEGETABLES = [
@@ -21,12 +21,30 @@ const URI_YONATAN_ITEMS = [
   'Butter', 'Bread', 'Cornflakes',
 ]
 
+const STORAGE_KEY = 'grocery-history'
+
 type Amounts = Record<string, number>
 
-type HistoryEntry = { date: string; items: string[] }
+type HistoryEntry = {
+  date: string
+  items: string[]
+  amounts: { veggies: Amounts; fruits: Amounts; basics: Amounts; uriYonatan: Amounts }
+}
 
 function initAmounts(items: string[]): Amounts {
   return Object.fromEntries(items.map((v) => [v, 0]))
+}
+
+function loadHistory(): HistoryEntry[] {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')
+  } catch {
+    return []
+  }
+}
+
+function saveHistory(history: HistoryEntry[]) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(history))
 }
 
 function ItemRow({
@@ -78,7 +96,11 @@ function App() {
   const [basics, setBasics] = useState<Amounts>(initAmounts(BASICS))
   const [uriYonatan, setUriYonatan] = useState<Amounts>(initAmounts(URI_YONATAN_ITEMS))
   const [approvedList, setApprovedList] = useState<string[] | null>(null)
-  const [history, setHistory] = useState<HistoryEntry[]>([])
+  const [history, setHistory] = useState<HistoryEntry[]>(loadHistory)
+
+  useEffect(() => {
+    saveHistory(history)
+  }, [history])
 
   const change = (setter: React.Dispatch<React.SetStateAction<Amounts>>) =>
     (item: string, delta: number) =>
@@ -100,9 +122,23 @@ function App() {
       formatSection('Uri & Yonatan', URI_YONATAN_ITEMS, uriYonatan),
     ].filter(Boolean) as string[]
     const items = sections.length > 0 ? sections : ['(nothing selected)']
+    const entry: HistoryEntry = {
+      date: new Date().toLocaleString(),
+      items,
+      amounts: { veggies, fruits, basics, uriYonatan },
+    }
     setApprovedList(items)
-    const date = new Date().toLocaleString()
-    setHistory((prev) => [{ date, items }, ...prev])
+    setHistory((prev) => [entry, ...prev])
+  }
+
+  const handlePreviousOrder = () => {
+    if (history.length === 0) return
+    const last = history[0]
+    setVeggies(last.amounts.veggies)
+    setFruits(last.amounts.fruits)
+    setBasics(last.amounts.basics)
+    setUriYonatan(last.amounts.uriYonatan)
+    setApprovedList(null)
   }
 
   return (
@@ -112,6 +148,9 @@ function App() {
       <div className="approve-bar">
         <button className="approve-btn" onClick={handleApprove}>Approve</button>
         <button className="reset-btn" onClick={handleReset}>Reset</button>
+        {history.length > 0 && (
+          <button className="prev-btn" onClick={handlePreviousOrder}>Previous Order</button>
+        )}
       </div>
 
       <div className="section">

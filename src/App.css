@@ -67,6 +67,23 @@ h1 {
   background: #b91c1c;
 }
 
+.prev-btn {
+  width: auto;
+  height: auto;
+  font-size: 1rem;
+  padding: 0.6rem 2rem;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.prev-btn:hover {
+  background: #6d28d9;
+}
+
 .approved-list {
   border-top: 1px solid #333;
   padding-top: 1.5rem;
