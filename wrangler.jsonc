@@ -42,4 +42,15 @@
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
 	 */
 	// "services": [  {   "binding": "MY_SERVICE",   "service": "my-service"  } ]
+	/**
+	 * D1 Database
+	 * https://developers.cloudflare.com/d1/
+	 */
+	,"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "grocery-history",
+			"database_id": "PASTE_YOUR_DATABASE_ID_HERE"
+		}
+	]
 }

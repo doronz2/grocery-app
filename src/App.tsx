@@ -21,11 +21,10 @@ const URI_YONATAN_ITEMS = [
   'Butter', 'Bread', 'Cornflakes',
 ]
 
-const STORAGE_KEY = 'grocery-history'
-
 type Amounts = Record<string, number>
 
 type HistoryEntry = {
+  id: number
   date: string
   items: string[]
   amounts: { veggies: Amounts; fruits: Amounts; basics: Amounts; uriYonatan: Amounts }
@@ -33,18 +32,6 @@ type HistoryEntry = {
 
 function initAmounts(items: string[]): Amounts {
   return Object.fromEntries(items.map((v) => [v, 0]))
-}
-
-function loadHistory(): HistoryEntry[] {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]')
-  } catch {
-    return []
-  }
-}
-
-function saveHistory(history: HistoryEntry[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(history))
 }
 
 function ItemRow({
@@ -96,11 +83,15 @@ function App() {
   const [basics, setBasics] = useState<Amounts>(initAmounts(BASICS))
   const [uriYonatan, setUriYonatan] = useState<Amounts>(initAmounts(URI_YONATAN_ITEMS))
   const [approvedList, setApprovedList] = useState<string[] | null>(null)
-  const [history, setHistory] = useState<HistoryEntry[]>(loadHistory)
+  const [history, setHistory] = useState<HistoryEntry[]>([])
 
+  // Load history from the database on startup
   useEffect(() => {
-    saveHistory(history)
-  }, [history])
+    fetch('/api/history')
+      .then((r) => r.json())
+      .then(setHistory)
+      .catch(() => {}) // silently ignore if offline / dev without DB
+  }, [])
 
   const change = (setter: React.Dispatch<React.SetStateAction<Amounts>>) =>
     (item: string, delta: number) =>
@@ -114,7 +105,7 @@ function App() {
     setApprovedList(null)
   }
 
-  const handleApprove = () => {
+  const handleApprove = async () => {
     const sections = [
       formatSection('Basics', BASICS, basics),
       formatSection('Fruits', FRUITS, fruits),
@@ -122,13 +113,21 @@ function App() {
       formatSection('Uri & Yonatan', URI_YONATAN_ITEMS, uriYonatan),
     ].filter(Boolean) as string[]
     const items = sections.length > 0 ? sections : ['(nothing selected)']
-    const entry: HistoryEntry = {
-      date: new Date().toLocaleString(),
-      items,
-      amounts: { veggies, fruits, basics, uriYonatan },
-    }
+    const date = new Date().toLocaleString()
+    const amounts = { veggies, fruits, basics, uriYonatan }
+
     setApprovedList(items)
-    setHistory((prev) => [entry, ...prev])
+
+    // Save to database
+    const res = await fetch('/api/history', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, items, amounts }),
+    })
+    if (res.ok) {
+      const { id } = await res.json() as { id: number }
+      setHistory((prev) => [{ id, date, items, amounts }, ...prev])
+    }
   }
 
   const handlePreviousOrder = () => {
@@ -178,7 +177,7 @@ function App() {
         <div className="history">
           <h2>History</h2>
           {history.slice(1).map((entry) => (
-            <div key={entry.date} className="history-entry">
+            <div key={entry.id} className="history-entry">
               <p className="history-date">{entry.date}</p>
               {entry.items.map((line) => (
                 <p key={line} className="history-line">{line}</p>
